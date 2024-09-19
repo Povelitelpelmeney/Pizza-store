@@ -31,15 +31,20 @@ export const Home = () => {
       });
     window.scrollTo(0, 0);
   }, [categoryId, sortType, searchValue, curPage]);
-  const pizzas = items
+  let pizzas = []
+  if(typeof items==="string"){
+   pizzas = []
+  }
+  else{
+    pizzas = items
     .filter((obj) => {
-      console.log(searchValue);
       if (obj.title.toLowerCase().includes(searchValue.toLowerCase())) {
         return true;
       }
       return false;
     })
     .map((el) => <PizzaBlock key={el.id} {...el} />);
+  }
   const skeleton = [...new Array(6)].map((_, index) => (
     <Skeleton key={index} />
   ));

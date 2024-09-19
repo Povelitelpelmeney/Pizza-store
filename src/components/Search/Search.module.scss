@@ -1,6 +1,6 @@
 .root {
-  position: relative;
-  left: -100px;
+  display: flex;
+  justify-content: center;
 }
 .input {
   border: 1px soid rgba(0, 0, 0, 0.1);
