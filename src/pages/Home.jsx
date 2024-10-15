@@ -7,6 +7,7 @@ import {
   setCurPage,
   setFilters,
 } from "../redux/slices/filterSlice";
+import { setItems, fetchPizzas } from "../redux/slices/pizzaSlice";
 
 import Categories from "../components/Categories";
 import PizzaBlock from "../components/PizzaBlock";
@@ -20,8 +21,8 @@ export const Home = () => {
   const { categoryId, sort, curPage } = useSelector(
     (state) => state.filterSlice
   );
+  const { items, status } = useSelector((state) => state.pizzaSlice);
   const { searchValue } = React.useContext(SearchContext);
-  const [items, setItems] = React.useState([]);
   const [isLoading, setIsloading] = React.useState(true);
   const onChangeCategory = (id) => {
     dispatch(setCategoryId(id));
@@ -29,34 +30,26 @@ export const Home = () => {
   const onChangePage = (page) => {
     dispatch(setCurPage(page));
   };
-
-  React.useEffect(() => {
+  const getPizzas = async () => {
     setIsloading(true);
     const category = categoryId > 0 ? `category=${categoryId}` : "";
     const search = searchValue ? `&search=${searchValue}` : ``;
-    axios
-      .get(
-        `https://66dfe34a2fb67ac16f276c3c.mockapi.io/items?page=${curPage}&limit=4&${category}&sortBy=${sort.sortProperty}&order=desc${search}`
-      )
-      .then((res) => {
-        setItems(res.data);
-        setIsloading(false);
-      });
+    dispatch(fetchPizzas({ curPage, category, sort, search }));
     window.scrollTo(0, 0);
+  };
+
+  React.useEffect(() => {
+    getPizzas();
   }, [categoryId, sort.sortProperty, searchValue, curPage]);
-  let pizzas = [];
-  if (typeof items === "string") {
-    pizzas = [];
-  } else {
-    pizzas = items
-      .filter((obj) => {
-        if (obj.title.toLowerCase().includes(searchValue.toLowerCase())) {
-          return true;
-        }
-        return false;
-      })
-      .map((el) => <PizzaBlock key={el.id} {...el} />);
-  }
+  let pizzas = items
+    .filter((obj) => {
+      if (obj.title.toLowerCase().includes(searchValue.toLowerCase())) {
+        return true;
+      }
+      return false;
+    })
+    .map((el) => <PizzaBlock key={el.id} {...el} />);
+
   const skeleton = [...new Array(6)].map((_, index) => (
     <Skeleton key={index} />
   ));
@@ -67,7 +60,13 @@ export const Home = () => {
         <Sort />
       </div>
       <h2 className="content__title">Все пиццы</h2>
-      <div className="content__items">{isLoading ? skeleton : pizzas}</div>
+      {status === "error" ? (
+        <h2>Произошла ошибка</h2>
+      ) : (
+        <div className="content__items">
+          {status === "loading" ? skeleton : pizzas}
+        </div>
+      )}
       <Pagination
         value={curPage}
         onChangePage={(number) => onChangePage(number)}
