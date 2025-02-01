@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { addItem } from "../../redux/slices/cartSlice";
+import { Link } from "react-router-dom";
 function PizzaBlock({ id, title, price, imageUrl, sizes, types }) {
   const [activeSize, setActiveSize] = React.useState(0);
   const [activeType, setActiveType] = React.useState(0);
@@ -9,7 +10,7 @@ function PizzaBlock({ id, title, price, imageUrl, sizes, types }) {
   const dispatch = useDispatch();
   const count = useSelector((state) =>
     state.cartSlice.items.reduce((summ, el) => {
-      if (el.id == id) {
+      if (el.id === id) {
         summ += el.count;
       }
       return summ;
@@ -31,8 +32,10 @@ function PizzaBlock({ id, title, price, imageUrl, sizes, types }) {
   return (
     <div className="pizza-block-wrappper">
       <div className="pizza-block">
-        <img className="pizza-block__image" src={imageUrl} alt="Pizza" />
-        <h4 className="pizza-block__title">{title}</h4>
+        <Link key={id} to={`/pizza/${id}`}>
+          <img className="pizza-block__image" src={imageUrl} alt="Pizza" />
+          <h4 className="pizza-block__title">{title}</h4>
+        </Link>
         <div className="pizza-block__selector">
           <ul>
             {types.map((el) => {
