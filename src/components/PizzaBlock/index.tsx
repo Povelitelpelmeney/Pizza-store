@@ -2,14 +2,32 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { addItem } from "../../redux/slices/cartSlice";
 import { Link } from "react-router-dom";
-function PizzaBlock({ id, title, price, imageUrl, sizes, types }) {
-  const [activeSize, setActiveSize] = React.useState(0);
-  const [activeType, setActiveType] = React.useState(0);
+import { CartItemType } from "../CartItem";
+import { RootState } from "../../redux/store";
+
+export type PizzaBlockProps = {
+  id: string;
+  title: string;
+  price: number;
+  imageUrl: string;
+  sizes: string[];
+  types: number[];
+};
+
+const PizzaBlock: React.FC<PizzaBlockProps> = ({
+  id,
+  title,
+  price,
+  imageUrl,
+  sizes,
+  types,
+}) => {
+  const [activeSize, setActiveSize] = React.useState<number>(0);
+  const [activeType, setActiveType] = React.useState<number>(0);
   const typeNames = ["тонкое", "традиционное"];
-  const typeSizes = ["26 см", "30 см", "40 см"];
   const dispatch = useDispatch();
-  const count = useSelector((state) =>
-    state.cartSlice.items.reduce((summ, el) => {
+  const count = useSelector((state: RootState) =>
+    state.cartSlice.items.reduce((summ: number, el: CartItemType) => {
       if (el.id === id) {
         summ += el.count;
       }
@@ -18,13 +36,13 @@ function PizzaBlock({ id, title, price, imageUrl, sizes, types }) {
   );
   const addedCount = count ? count : 0;
   const onCLickAdd = () => {
-    const item = {
+    const item: CartItemType = {
       id,
       title,
       price,
       imageUrl,
-      type: typeNames[activeType],
-      size: typeSizes[activeSize],
+      type: typeNames[types[activeType]],
+      size: sizes[activeSize],
       count,
     };
     dispatch(addItem(item));
@@ -43,7 +61,7 @@ function PizzaBlock({ id, title, price, imageUrl, sizes, types }) {
                 <li
                   key={el}
                   onClick={() => setActiveType(el)}
-                  className={activeType === el ? "active" : ""}
+                  className={types[activeType] === el ? "active" : ""}
                 >
                   {typeNames[el]}
                 </li>
@@ -54,7 +72,7 @@ function PizzaBlock({ id, title, price, imageUrl, sizes, types }) {
             {sizes.map((el, pos) => {
               return (
                 <li
-                  key={el}
+                  key={pos}
                   onClick={() => setActiveSize(pos)}
                   className={activeSize === pos ? "active" : ""}
                 >
@@ -89,5 +107,5 @@ function PizzaBlock({ id, title, price, imageUrl, sizes, types }) {
       </div>
     </div>
   );
-}
+};
 export default PizzaBlock;

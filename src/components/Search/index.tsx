@@ -3,23 +3,27 @@ import styles from "./Search.module.scss";
 import debounce from "lodash.debounce";
 import { useDispatch } from "react-redux";
 import { setSearchValue } from "../../redux/slices/filterSlice";
-export default function Search() {
-  const inputRef = React.useRef();
-  const [value, setValue] = React.useState("");
+const Search: React.FC = () => {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const [value, setValue] = React.useState<string>("");
   const dispatch = useDispatch();
+  const debouncedSearch = React.useMemo(
+    () =>
+      debounce((str: string) => {
+        dispatch(setSearchValue(str));
+      }, 250),
+    [dispatch]
+  );
   const onCLickClear = () => {
     dispatch(setSearchValue(""));
     setValue("");
-    inputRef.current.focus();
+    inputRef.current?.focus();
   };
 
-  const updateSearchValue = React.useCallback(
-    debounce((str) => {
-      dispatch(setSearchValue(str));
-    }, 250),
-    []
-  );
-  const onChangeInput = (event) => {
+  const updateSearchValue = React.useCallback(debouncedSearch, [
+    debouncedSearch,
+  ]);
+  const onChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
     updateSearchValue(event.target.value);
   };
@@ -29,7 +33,7 @@ export default function Search() {
         className={styles.icon}
         height="512px"
         id="Layer_1"
-        styles="enable-background:new 0 0 512 512"
+        enableBackground="new 0 0 512 512"
         version="1.1"
         viewBox="0 0 512 512"
         width="512px"
@@ -61,4 +65,6 @@ export default function Search() {
       )}
     </div>
   );
-}
+};
+
+export default Search;

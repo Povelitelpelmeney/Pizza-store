@@ -3,9 +3,21 @@ import { Link, useLocation } from "react-router-dom";
 import Search from "./Search";
 import { useSelector } from "react-redux";
 import { selectCart } from "../redux/slices/cartSlice";
-function Header() {
-  const { items, totalPrice } = useSelector(selectCart);
+import React from "react";
+import { CartItemType } from "./CartItem";
+const Header: React.FC = () => {
+  const { items } = useSelector(selectCart);
   const location = useLocation();
+  const isMounted = React.useRef(false);
+
+  React.useEffect(() => {
+    if (isMounted.current) {
+      const json = JSON.stringify(items);
+      localStorage.setItem("cart", json);
+    }
+    isMounted.current = true;
+  }, [items]);
+
   return (
     <div className="header">
       <div className="container">
@@ -18,12 +30,17 @@ function Header() {
             </div>
           </div>
         </Link>
-        <Search />
+        {location.pathname !== "/cart" && <Search />}
         <div className="header__cart">
           {location.pathname !== "/cart" && (
             <Link to="/cart" className="button button--cart">
               <span>
-                {items.reduce((summ, el) => summ + el.price * el.count, 0)}₽
+                {items.reduce(
+                  (summ: number, el: CartItemType) =>
+                    summ + el.price * el.count,
+                  0
+                )}
+                ₽
               </span>
               <div className="button__delimiter"></div>
               <svg
@@ -55,12 +72,17 @@ function Header() {
                   strokeLinejoin="round"
                 />
               </svg>
-              <span>{items.reduce((summ, el) => summ + el.count, 0)}</span>
+              <span>
+                {items.reduce(
+                  (summ: number, el: CartItemType) => summ + el.count,
+                  0
+                )}
+              </span>
             </Link>
           )}
         </div>
       </div>
     </div>
   );
-}
+};
 export default Header;

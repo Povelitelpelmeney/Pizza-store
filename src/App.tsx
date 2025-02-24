@@ -1,6 +1,5 @@
-import React from "react";
-
 import Header from "./components/Header";
+import React from "react";
 import Home from "./pages/Home";
 import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
@@ -8,9 +7,7 @@ import FullPizza from "./pages/FullPizza";
 import { Routes, Route } from "react-router-dom";
 import "./scss/app.scss";
 
-export const SearchContext = React.createContext();
-
-function App() {
+const App: React.FC = () => {
   return (
     <div className="wrapper">
       <Header />
@@ -24,6 +21,6 @@ function App() {
       </div>
     </div>
   );
-}
+};
 
 export default App;

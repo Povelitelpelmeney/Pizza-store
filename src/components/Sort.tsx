@@ -1,24 +1,29 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { setSort } from "../redux/slices/filterSlice";
+import { setSort, Sort } from "../redux/slices/filterSlice";
+import { useAppDispatch } from "../hooks";
 
-function Sort() {
-  const list = [
+type elementType = { name: string; sortProperty: "rating" | "title" | "price" };
+type listType = Array<elementType>;
+type SortProps = {
+  value: Sort;
+};
+
+const SortPopup: React.FC<SortProps> = React.memo(({ value }) => {
+  const list: listType = [
     { name: "популярности", sortProperty: "rating" },
     { name: "цене", sortProperty: "price" },
     { name: "алфавиту", sortProperty: "title" },
   ];
-  const dispatch = useDispatch();
-  const sort = useSelector((state) => state.filterSlice.sort);
+  const dispatch = useAppDispatch();
   const [isVisible, setIsVisible] = React.useState(false);
-  const sortRef = React.useRef();
-  const onClickListItem = (i) => {
+  const sortRef = React.useRef<HTMLDivElement>(null);
+  const onClickListItem = (i: elementType) => {
     dispatch(setSort(i));
     setIsVisible(!isVisible);
   };
   React.useEffect(() => {
-    const handleCLick = (event) => {
-      if (!event.composedPath().includes(sortRef.current)) {
+    const handleCLick = (event: MouseEvent) => {
+      if (sortRef.current && !event.composedPath().includes(sortRef.current)) {
         setIsVisible(false);
       }
     };
@@ -43,7 +48,7 @@ function Sort() {
           />
         </svg>
         <b>Сортировка по:</b>
-        <span onClick={() => setIsVisible(!isVisible)}>{sort.name}</span>
+        <span onClick={() => setIsVisible(!isVisible)}>{value.name}</span>
       </div>
       {isVisible && (
         <div className="sort__popup">
@@ -54,7 +59,7 @@ function Sort() {
                   key={pos}
                   onClick={() => onClickListItem(obj)}
                   className={
-                    sort.sortProperty === obj.sortProperty ? "active" : ""
+                    value.sortProperty === obj.sortProperty ? "active" : ""
                   }
                 >
                   {obj.name}
@@ -66,5 +71,5 @@ function Sort() {
       )}
     </div>
   );
-}
-export default Sort;
+});
+export default SortPopup;

@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./NotFoundBlock.module.scss";
-export default function index() {
+const index: React.FC = () => {
   return (
     <div className={styles.root}>
       <h1>
@@ -11,4 +11,6 @@ export default function index() {
       <p className={styles.description}>Что-то пошло не так</p>
     </div>
   );
-}
+};
+
+export default index;

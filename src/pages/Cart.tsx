@@ -1,12 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import CartItem from "../components/CartItem";
+import CartItem, { CartItemType } from "../components/CartItem";
 import CartEmpty from "../components/CartEmpty";
 import { useSelector, useDispatch } from "react-redux";
 import { clearItems } from "../redux/slices/cartSlice";
-export default function Cart() {
+import { RootState } from "../redux/store";
+const Cart: React.FC = () => {
   const dispatch = useDispatch();
-  const items = useSelector((state) => state.cartSlice.items);
+  const items = useSelector((state: RootState) => state.cartSlice.items);
   const onCLickClear = () => {
     if (window.confirm("Очистить корзину?")) {
       dispatch(clearItems());
@@ -18,9 +19,9 @@ export default function Cart() {
   }
   return (
     <div className="container container--cart">
-      <div class="cart">
-        <div class="cart__top">
-          <h2 class="content__title">
+      <div className="cart">
+        <div className="cart__top">
+          <h2 className="content__title">
             <svg
               width="18"
               height="18"
@@ -52,7 +53,7 @@ export default function Cart() {
             </svg>
             Корзина
           </h2>
-          <div onClick={onCLickClear} class="cart__clear">
+          <div onClick={onCLickClear} className="cart__clear">
             <svg
               width="20"
               height="20"
@@ -92,18 +93,18 @@ export default function Cart() {
             <span>Очистить корзину</span>
           </div>
         </div>
-        <div class="content__items">
-          {items.map((item) => {
+        <div className="content__items">
+          {items.map((item: CartItemType) => {
             return <CartItem key={item.id} {...item} />;
           })}
         </div>
-        <div class="cart__bottom">
-          <div class="cart__bottom-details">
+        <div className="cart__bottom">
+          <div className="cart__bottom-details">
             <span>
               {" "}
               Всего пицц:{" "}
               <b>
-                {items.reduce((summ, el) => {
+                {items.reduce((summ: number, el: CartItemType) => {
                   return (summ += el.count);
                 }, 0)}
               </b>{" "}
@@ -112,15 +113,18 @@ export default function Cart() {
               {" "}
               Сумма заказа:{" "}
               <b>
-                {items.reduce((summ, el) => {
+                {items.reduce((summ: number, el: CartItemType) => {
                   return (summ += el.count * el.price);
                 }, 0)}
                 ₽
               </b>{" "}
             </span>
           </div>
-          <div class="cart__bottom-buttons">
-            <Link to="/" class="button button--outline button--add go-back-btn">
+          <div className="cart__bottom-buttons">
+            <Link
+              to="/"
+              className="button button--outline button--add go-back-btn"
+            >
               <svg
                 width="8"
                 height="14"
@@ -139,7 +143,7 @@ export default function Cart() {
 
               <span>Вернуться назад</span>
             </Link>
-            <div class="button pay-btn">
+            <div className="button pay-btn">
               <span>Оплатить сейчас</span>
             </div>
           </div>
@@ -147,4 +151,6 @@ export default function Cart() {
       </div>
     </div>
   );
-}
+};
+
+export default Cart;
